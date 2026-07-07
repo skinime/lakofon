@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lakofon — podnošenje zahteva studenata FON-a</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- NAV -->
+  <div class="nav">
+    <div class="brand"><div class="logo">L</div> Lakofon</div>
+    <div class="nav-links">
+      <a class="link" href="#kako">Kako radi</a>
+      <a class="btn sm" href="#zahtev">Podnesi zahtev</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="badge">🎓 Za studente FON-a</span>
+    <h1>Podnesi zahtev <span class="grad">brzo i jednostavno</span></h1>
+    <p>Izaberi predmet, ostavi svoje podatke i pošalji zahtev. Studentski mejl ti se
+       popunjava automatski, a cena se prikazuje odmah.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#zahtev">Podnesi zahtev →</a>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section class="features" id="kako">
+    <div class="feature">
+      <div class="ic">✅</div>
+      <h3>Bez registracije</h3>
+      <p>Ne moraš da praviš nalog — popuniš formu i pošalješ zahtev za manje od minuta.</p>
+    </div>
+    <div class="feature">
+      <div class="ic">💳</div>
+      <h3>Jasna cena</h3>
+      <p>Čim izabereš predmet, vidiš cenu i dobijaš sve podatke za uplatu na jednom mestu.</p>
+    </div>
+    <div class="feature">
+      <div class="ic">📎</div>
+      <h3>Prilog uz zahtev</h3>
+      <p>Dodaj fajl uz zahtev i sve stiže direktno — bez papirologije i čekanja.</p>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="section" id="zahtev">
+    <div class="container">
+      <div class="section-head">
+        <h2>Podnesi zahtev</h2>
+        <p>Popuni podatke ispod. Sva polja sa <strong>*</strong> su obavezna.</p>
+      </div>
+
+      <form id="form" class="card">
+        <div class="row">
+          <div>
+            <label>Ime *</label>
+            <input id="ime" required placeholder="Petar" autocomplete="given-name" />
+          </div>
+          <div>
+            <label>Prezime *</label>
+            <input id="prezime" required placeholder="Nikolić" autocomplete="family-name" />
+          </div>
+        </div>
+
+        <label>Broj indeksa * <span class="mini">(format: 2026/0123)</span></label>
+        <input id="index" required placeholder="2026/0123" />
+
+        <label>Studentski mejl * <span class="mini">(automatski se popunjava)</span></label>
+        <input id="email" required placeholder="pn20260123@student.fon.bg.ac.rs" autocomplete="email" />
+
+        <label>Predmet *</label>
+        <select id="subject" required>
+          <option value="" disabled selected>Izaberi predmet…</option>
+        </select>
+
+        <div id="itemWrap" style="display:none">
+          <label>Podstavka predmeta *</label>
+          <select id="subjectItem">
+            <option value="" disabled selected>Izaberi podstavku…</option>
+          </select>
+        </div>
+
+        <div id="otherWrap" style="display:none">
+          <label>Naziv predmeta (ostalo) *</label>
+          <input id="subjectOther" placeholder="Upiši naziv predmeta" />
+        </div>
+
+        <div class="price-badge" id="priceBadge">
+          💳 Cena za izabrani predmet: <span id="priceVal"></span>&nbsp;RSD
+        </div>
+
+        <label>Poruka / detalji zahteva</label>
+        <textarea id="message" placeholder="Opiši šta ti je potrebno…"></textarea>
+
+        <label>Prilog <span class="mini">(opciono — do 15 MB)</span></label>
+        <input type="file" id="attachment" />
+
+        <button type="submit" class="btn full" id="submitBtn">Pošalji zahtev</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- MODAL: uplata -->
+  <div class="modal-overlay" id="payModal">
+    <div class="modal">
+      <h3>Podaci za uplatu</h3>
+      <div class="muted">Izabrani predmet zahteva uplatu. Iskoristi podatke ispod, pa potvrdi slanje zahteva.</div>
+      <div class="pay-amount"><span id="mAmount"></span> <small>RSD</small></div>
+      <div class="pay-card">
+        <div class="pay-row"><span class="k">Primalac</span><span class="v" id="mRecipient"></span></div>
+        <div class="pay-row"><span class="k">Račun</span><span class="v" id="mAccount"></span></div>
+        <div class="pay-row"><span class="k">Model</span><span class="v" id="mModel"></span></div>
+        <div class="pay-row"><span class="k">Poziv na broj</span><span class="v" id="mReference"></span></div>
+        <div class="pay-row"><span class="k">Svrha</span><span class="v" id="mPurpose"></span></div>
+      </div>
+      <label style="margin-top:18px">Dokaz o uplati <span class="mini">(slika ili PDF — opciono)</span></label>
+      <input type="file" id="paymentProof" accept="image/*,application/pdf" />
+      <div class="modal-actions">
+        <button class="btn ghost" id="payCancel">Nazad</button>
+        <button class="btn ok" id="payConfirm">Uplatio sam — pošalji</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="brand"><div class="logo">L</div> Lakofon</div>
+    <div>Platforma za podnošenje zahteva studenata FON-a.</div>
+    <div style="margin-top:8px" class="mini">© 2026 Lakofon</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

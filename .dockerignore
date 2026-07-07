@@ -1,0 +1,9 @@
+node_modules
+uploads
+lakofon.db
+lakofon.db-wal
+lakofon.db-shm
+*.log
+.git
+.DS_Store
+.claude

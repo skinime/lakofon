@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lakofon — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="nav">
+    <div class="brand"><div class="logo">L</div> Lakofon <span class="mini" style="font-weight:600">admin</span></div>
+    <div class="flex">
+      <a class="link" href="index.html">← Forma</a>
+      <button class="btn ghost sm" id="logoutBtn" style="display:none">Odjava</button>
+    </div>
+  </div>
+
+  <!-- Login -->
+  <div class="container" id="loginView">
+    <div class="card" style="max-width:420px;margin:60px auto">
+      <h2>Prijava admina</h2>
+      <div class="sub">Unesi svoj admin mejl i lozinku.</div>
+      <label>Mejl</label>
+      <input type="email" id="loginEmail" placeholder="mejl@primer.com" autocomplete="username" />
+      <label>Lozinka</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+      <button class="btn full" id="loginBtn">Prijavi se</button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="container wide" id="dashView" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Ukupno zahteva</div></div>
+      <div class="stat"><div class="n" id="stNovo">0</div><div class="l">Novi</div></div>
+      <div class="stat"><div class="n" id="stDone">0</div><div class="l">Završeni</div></div>
+      <div class="stat"><div class="n" id="stRevenue">0</div><div class="l">Prihod (RSD)</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="requests">Zahtevi</button>
+      <button class="tab" data-tab="subjects">Predmeti i cene</button>
+      <button class="tab" data-tab="settings">Podešavanja</button>
+    </div>
+
+    <!-- ZAHTEVI -->
+    <div class="panel active" id="tab-requests">
+      <div class="card">
+        <div class="spread">
+          <h2>Zahtevi</h2>
+          <button class="btn ghost sm" id="refreshBtn">↻ Osveži</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Datum</th><th>Student</th><th>Indeks / Mejl</th>
+              <th>Predmet</th><th>Cena</th><th>Prilog</th><th>Dokaz uplate</th><th>Status</th><th></th>
+            </tr></thead>
+            <tbody id="reqBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREDMETI -->
+    <div class="panel" id="tab-subjects">
+      <div class="card">
+        <h2>Novi predmet</h2>
+        <div class="sub">Dodaj predmet i cenu. Cena 0 = bez uplate.</div>
+        <div class="row">
+          <div><label>Naziv predmeta</label><input id="newSubName" placeholder="npr. Baze podataka" /></div>
+          <div><label>Cena (RSD)</label><input id="newSubPrice" type="number" value="0" /></div>
+        </div>
+        <button class="btn full ok" id="addSubBtn">+ Dodaj predmet</button>
+      </div>
+      <div class="card">
+        <h2>Postojeći predmeti</h2>
+        <div class="sub">Svaki predmet može imati podstavke (npr. Kolokvijum 1, Ispit…), svaka sa svojom cenom. Ako predmet ima podstavke, student bira podstavku, a cena se uzima iz nje.</div>
+        <div id="subjectsList"></div>
+      </div>
+    </div>
+
+    <!-- PODESAVANJA -->
+    <div class="panel" id="tab-settings">
+      <div class="card">
+        <h2>Podaci za uplatu</h2>
+        <div class="sub">Ovi podaci se prikazuju studentu u prozoru za uplatu.</div>
+        <div class="row">
+          <div><label>Primalac</label><input id="pay_recipient" /></div>
+          <div><label>Račun</label><input id="pay_account" /></div>
+        </div>
+        <div class="row">
+          <div><label>Model</label><input id="pay_model" /></div>
+          <div><label>Poziv na broj</label><input id="pay_reference" placeholder="prazno = broj indeksa studenta" /></div>
+        </div>
+        <label>Svrha uplate</label><input id="pay_purpose" />
+      </div>
+
+      <div class="card">
+        <h2>Mejl obaveštenja (SMTP)</h2>
+        <div class="sub">Kad je popunjeno, svaki zahtev ti stiže na mejl (sa prilogom). Ako je prazno, zahtevi se i dalje čuvaju ovde u dashboard-u.</div>
+        <label>Mejl na koji stižu zahtevi</label><input id="admin_email" />
+        <div class="row">
+          <div><label>SMTP host</label><input id="smtp_host" placeholder="smtp.gmail.com" /></div>
+          <div><label>SMTP port</label><input id="smtp_port" placeholder="587" /></div>
+        </div>
+        <div class="row">
+          <div><label>SMTP korisnik</label><input id="smtp_user" placeholder="tvoj@gmail.com" /></div>
+          <div><label>SMTP lozinka</label><input id="smtp_pass" type="password" placeholder="app password" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Bezbednost (nalog za prijavu)</h2>
+        <label>Admin mejl za prijavu</label>
+        <input id="admin_login_email" type="email" />
+        <label>Nova admin lozinka (ostavi prazno da ne menjaš)</label>
+        <input id="admin_password" type="password" placeholder="••••••••" />
+      </div>
+
+      <button class="btn full" id="saveSettingsBtn">Sačuvaj podešavanja</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="admin.js"></script>
+</body>
+</html>

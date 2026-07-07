@@ -1,0 +1,19 @@
+{
+  "name": "lakofon",
+  "version": "1.0.0",
+  "description": "Lakofon - platforma za podnošenje zahteva studenata FON-a",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server.js",
+    "dev": "node --experimental-sqlite --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.13"
+  }
+}

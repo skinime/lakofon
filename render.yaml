@@ -1,0 +1,26 @@
+# Render Blueprint za Lakofon.
+# Na Render.com: New +  →  Blueprint  →  izaberi ovaj repo. Render pročita ovaj fajl.
+services:
+  - type: web
+    name: lakofon
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter        # "starter" (plaćeno ~$7/mo) je potreban za trajni disk; za besplatno stavi "free" i obriši "disk" blok ispod
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      # Popuni ove u Render dashboard-u (ili ovde) da ti zahtevi stižu na mejl:
+      # - key: SMTP_HOST
+      #   value: smtp.gmail.com
+      # - key: SMTP_PORT
+      #   value: "587"
+      # - key: SMTP_USER
+      #   value: tvoj@gmail.com
+      # - key: SMTP_PASS
+      #   sync: false
+      # - key: ADMIN_PASSWORD
+      #   sync: false
+    disk:
+      name: lakofon-data
+      mountPath: /data
+      sizeGB: 1
