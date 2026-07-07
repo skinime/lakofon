@@ -1,6 +1,5 @@
 import express from 'express';
 import multer from 'multer';
-import nodemailer from 'nodemailer';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -39,36 +38,16 @@ function requireAdmin(req, res, next) {
 
 // ---- Mejl ----
 async function sendAdminEmail(reqData) {
-  const host = setting('smtp_host');
-  const user = setting('smtp_user');
-  const pass = setting('smtp_pass');
-  if (!host || !user || !pass) {
-    console.log('[mejl] SMTP nije podešen — preskačem slanje. Zahtev je sačuvan u bazi.');
-    return { sent: false, reason: 'smtp_not_configured' };
+  const apiKey = setting('smtp_pass');
+  const from = setting('smtp_from') || 'onboarding@resend.dev';
+  const to = setting('admin_email');
+  if (!apiKey || !to) {
+    console.log('[mejl] Resend API key ili admin mejl nije podešen — preskačem slanje.');
+    return { sent: false, reason: 'not_configured' };
   }
   try {
-    const transporter = nodemailer.createTransport({
-      host,
-      port: Number(setting('smtp_port') || 587),
-      secure: Number(setting('smtp_port')) === 465,
-      auth: { user, pass }
-    });
-    const to = setting('admin_email');
-    const attachments = [];
-    if (reqData.attachment_path) {
-      attachments.push({ filename: reqData.attachment_name, path: reqData.attachment_path });
-    }
-    if (reqData.payment_proof_path) {
-      attachments.push({ filename: 'DOKAZ_' + reqData.payment_proof_name, path: reqData.payment_proof_path });
-    }
     const priceLine = reqData.price ? `Cena: ${reqData.price} RSD\n` : '';
-    const from = setting('smtp_from') || user;
-    await transporter.sendMail({
-      from,
-      to,
-      subject: `LakoFon — novi zahtev: ${reqData.subject_name}`,
-      text:
-`Novi zahtev preko LakoFon platforme.
+    const text = `Novi zahtev preko LakoFon platforme.
 
 Ime i prezime: ${reqData.ime} ${reqData.prezime}
 Broj indeksa: ${reqData.index_broj}
@@ -79,9 +58,14 @@ ${reqData.message || '(nema poruke)'}
 
 Prilog: ${reqData.attachment_name || '(nema priloga)'}
 Dokaz o uplati: ${reqData.payment_proof_name || '(nije priložen)'}
-`,
-      attachments
+`;
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from, to, subject: `LakoFon — novi zahtev: ${reqData.subject_name}`, text })
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || JSON.stringify(data));
     return { sent: true };
   } catch (e) {
     console.error('[mejl] greška pri slanju:', e.message);
@@ -296,28 +280,29 @@ app.post('/api/admin/requests/:id/reply', requireAdmin, upload.single('attachmen
     const { subject, message } = req.body;
     if (!message) return res.status(400).json({ error: 'Poruka je obavezna.' });
 
-    const host = setting('smtp_host');
-    const user = setting('smtp_user');
-    const pass = setting('smtp_pass');
-    if (!host || !user || !pass) return res.status(400).json({ error: 'SMTP nije podešen. Idi na Podešavanja.' });
+    const apiKey = setting('smtp_pass');
+    const from = setting('smtp_from') || 'onboarding@resend.dev';
+    if (!apiKey) return res.status(400).json({ error: 'Resend API key nije podešen. Idi na Podešavanja.' });
 
-    const transporter = nodemailer.createTransport({
-      host,
-      port: Number(setting('smtp_port') || 587),
-      secure: Number(setting('smtp_port')) === 465,
-      auth: { user, pass }
-    });
-
-    const attachments = [];
-    if (req.file) attachments.push({ filename: req.file.originalname, path: req.file.path });
-
-    await transporter.sendMail({
-      from: setting('smtp_from') || user,
+    const emailPayload = {
+      from,
       to: row.email,
       subject: subject || `LakoFon — odgovor na zahtev`,
-      text: message,
-      attachments
+      text: message
+    };
+
+    if (req.file) {
+      const fileContent = fs.readFileSync(req.file.path).toString('base64');
+      emailPayload.attachments = [{ filename: req.file.originalname, content: fileContent }];
+    }
+
+    const resendRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(emailPayload)
     });
+    const data = await resendRes.json();
+    if (!resendRes.ok) throw new Error(data.message || JSON.stringify(data));
 
     res.json({ ok: true });
   } catch (e) {
