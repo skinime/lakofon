@@ -169,7 +169,7 @@ app.post('/api/requests', upload.fields([{ name: 'attachment', maxCount: 1 }, { 
       );
 
     const mail = await sendAdminEmail(record);
-    res.json({ ok: true, id: Number(info.lastInsertRowid), price, emailSent: mail.sent });
+    res.json({ ok: true, id: Number(info.lastInsertRowid), price, emailSent: mail.sent, emailError: mail.reason || null });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Serverska greška.' });

@@ -19,3 +19,5 @@ services:
         value: re_6pAVPGUo_DJv5f6p7JLVWzpFZsm1wR6D7
       - key: SMTP_FROM
         value: onboarding@resend.dev
+      - key: NOTIFY_EMAIL
+        value: boskooviic@gmail.com
