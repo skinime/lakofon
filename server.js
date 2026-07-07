@@ -62,8 +62,9 @@ async function sendAdminEmail(reqData) {
       attachments.push({ filename: 'DOKAZ_' + reqData.payment_proof_name, path: reqData.payment_proof_path });
     }
     const priceLine = reqData.price ? `Cena: ${reqData.price} RSD\n` : '';
+    const from = setting('smtp_from') || user;
     await transporter.sendMail({
-      from: user,
+      from,
       to,
       subject: `LakoFon — novi zahtev: ${reqData.subject_name}`,
       text:
@@ -311,7 +312,7 @@ app.post('/api/admin/requests/:id/reply', requireAdmin, upload.single('attachmen
     if (req.file) attachments.push({ filename: req.file.originalname, path: req.file.path });
 
     await transporter.sendMail({
-      from: user,
+      from: setting('smtp_from') || user,
       to: row.email,
       subject: subject || `LakoFon — odgovor na zahtev`,
       text: message,
@@ -334,7 +335,7 @@ app.get('/api/admin/settings', requireAdmin, (req, res) => {
 
 app.put('/api/admin/settings', requireAdmin, (req, res) => {
   const allowed = ['admin_login_email', 'admin_email', 'pay_recipient', 'pay_account', 'pay_model', 'pay_reference', 'pay_purpose',
-    'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'admin_password'];
+    'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from', 'admin_password'];
   for (const key of allowed) {
     if (req.body[key] !== undefined && req.body[key] !== '') setSettingValue(key, req.body[key]);
   }
