@@ -1,10 +1,11 @@
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import fs from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Na hostingu sa trajnim diskom postavi DATA_DIR (npr. /data) da baza preživi redeploy
 const DATA_DIR = process.env.DATA_DIR || __dirname;
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 export const db = new DatabaseSync(path.join(DATA_DIR, 'lakofon.db'));
 
 db.exec(`
