@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lakofon — Admin</title>
+  <title>LakoFon — Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -11,7 +11,7 @@
 </head>
 <body>
   <div class="nav">
-    <div class="brand"><div class="logo">L</div> Lakofon <span class="mini" style="font-weight:600">admin</span></div>
+    <div class="brand"><div class="logo">L</div> LakoFon <span class="mini" style="font-weight:600">admin</span></div>
     <div class="flex">
       <a class="link" href="index.html">← Forma</a>
       <button class="btn ghost sm" id="logoutBtn" style="display:none">Odjava</button>
@@ -48,20 +48,21 @@
 
     <!-- ZAHTEVI -->
     <div class="panel active" id="tab-requests">
+      <div class="spread" style="margin-top:20px">
+        <div class="req-tabs" id="reqTabs">
+          <button class="req-tab active" data-status="novo">Novi <span class="req-tab-count" id="cntNovo">0</span></button>
+          <button class="req-tab" data-status="primljeno">Primljeni <span class="req-tab-count" id="cntPrimljeno">0</span></button>
+          <button class="req-tab" data-status="uradu">U radu <span class="req-tab-count" id="cntUradu">0</span></button>
+          <button class="req-tab" data-status="zavrseno">Završeni <span class="req-tab-count" id="cntZavrseno">0</span></button>
+        </div>
+        <button class="btn ghost sm" id="refreshBtn">↻ Osveži</button>
+      </div>
+
       <div class="card">
-        <div class="spread">
-          <h2>Zahtevi</h2>
-          <button class="btn ghost sm" id="refreshBtn">↻ Osveži</button>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>#</th><th>Datum</th><th>Student</th><th>Indeks / Mejl</th>
-              <th>Predmet</th><th>Cena</th><th>Prilog</th><th>Dokaz uplate</th><th>Status</th><th></th>
-            </tr></thead>
-            <tbody id="reqBody"></tbody>
-          </table>
-        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>#</th><th>Datum</th><th>Student</th><th>Indeks / Mejl</th><th>Predmet</th><th>Cena</th><th>Prilog</th><th>Dokaz uplate</th><th>Premesti</th><th></th></tr></thead>
+          <tbody id="reqBody"></tbody>
+        </table></div>
       </div>
     </div>
 
@@ -125,7 +126,25 @@
     </div>
   </div>
 
+  <!-- MODAL: odgovor -->
+  <div class="modal-overlay" id="replyModal">
+    <div class="modal" style="max-width:520px">
+      <h3>Odgovori studentu</h3>
+      <div class="muted" id="replyTo"></div>
+      <label>Naslov mejla</label>
+      <input id="replySubject" placeholder="LakoFon — odgovor na zahtev" />
+      <label>Poruka *</label>
+      <textarea id="replyMessage" placeholder="Upiši odgovor…" style="min-height:140px"></textarea>
+      <label>Prilog <span class="mini">(opciono — npr. rešenje, dokument)</span></label>
+      <input type="file" id="replyFile" />
+      <div class="modal-actions">
+        <button class="btn ghost" id="replyCancelBtn">Otkaži</button>
+        <button class="btn" id="replySendBtn">Pošalji odgovor</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
-  <script src="admin.js"></script>
+  <script src="upravljanje/admin.js"></script>
 </body>
 </html>

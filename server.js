@@ -65,9 +65,9 @@ async function sendAdminEmail(reqData) {
     await transporter.sendMail({
       from: user,
       to,
-      subject: `Lakofon — novi zahtev: ${reqData.subject_name}`,
+      subject: `LakoFon — novi zahtev: ${reqData.subject_name}`,
       text:
-`Novi zahtev preko Lakofon platforme.
+`Novi zahtev preko LakoFon platforme.
 
 Ime i prezime: ${reqData.ime} ${reqData.prezime}
 Broj indeksa: ${reqData.index_broj}
@@ -287,6 +287,44 @@ app.delete('/api/admin/items/:id', requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
+// Odgovor studentu
+app.post('/api/admin/requests/:id/reply', requireAdmin, upload.single('attachment'), async (req, res) => {
+  try {
+    const row = db.prepare('SELECT * FROM requests WHERE id = ?').get(Number(req.params.id));
+    if (!row) return res.status(404).json({ error: 'Zahtev ne postoji.' });
+    const { subject, message } = req.body;
+    if (!message) return res.status(400).json({ error: 'Poruka je obavezna.' });
+
+    const host = setting('smtp_host');
+    const user = setting('smtp_user');
+    const pass = setting('smtp_pass');
+    if (!host || !user || !pass) return res.status(400).json({ error: 'SMTP nije podešen. Idi na Podešavanja.' });
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port: Number(setting('smtp_port') || 587),
+      secure: Number(setting('smtp_port')) === 465,
+      auth: { user, pass }
+    });
+
+    const attachments = [];
+    if (req.file) attachments.push({ filename: req.file.originalname, path: req.file.path });
+
+    await transporter.sendMail({
+      from: user,
+      to: row.email,
+      subject: subject || `LakoFon — odgovor na zahtev`,
+      text: message,
+      attachments
+    });
+
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[reply]', e.message);
+    res.status(500).json({ error: 'Greška pri slanju: ' + e.message });
+  }
+});
+
 // Podešavanja (uplata, mejl, lozinka)
 app.get('/api/admin/settings', requireAdmin, (req, res) => {
   const s = settingsAll();
@@ -312,7 +350,18 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
   res.json({ total, novo, zavrseno, prihod });
 });
 
+// ---- Admin panel (skrivena stranica) ----
+const ADMIN_SLUG = process.env.ADMIN_SLUG || 'upravljanje';
+
+app.get(`/${ADMIN_SLUG}`, (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+app.get(`/${ADMIN_SLUG}/admin.js`, (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.js'));
+});
+
 app.listen(PORT, () => {
-  console.log(`\n  Lakofon radi na  http://localhost:${PORT}`);
-  console.log(`  Admin panel:     http://localhost:${PORT}/admin.html  (lozinka: admin123)\n`);
+  console.log(`\n  LakoFon radi na  http://localhost:${PORT}`);
+  console.log(`  Admin panel:     http://localhost:${PORT}/${ADMIN_SLUG}\n`);
 });

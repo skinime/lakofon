@@ -75,50 +75,98 @@ async function loadStats() {
   $('stRevenue').textContent = s.prihod;
 }
 
-const STATUSES = { novo: 'Novo', uradu: 'U radu', zavrseno: 'Završeno' };
+const ALL_STATUSES = ['novo', 'primljeno', 'uradu', 'zavrseno'];
+const STATUS_LABELS = { novo: 'Novi', primljeno: 'Primljeni', uradu: 'U radu', zavrseno: 'Završeni' };
+let activeStatus = 'novo';
+let allRequests = [];
+
 function esc(s) { return (s ?? '').toString().replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-async function loadRequests() {
-  const rows = await api('/api/admin/requests');
-  const body = $('reqBody');
-  if (!rows.length) { body.innerHTML = '<tr><td colspan="11" class="center mini">Još nema zahteva.</td></tr>'; return; }
-  body.innerHTML = rows.map(r => {
-    const d = new Date(r.created_at).toLocaleString('sr-RS');
-    const att = r.attachment_name
-      ? `<a href="/api/admin/requests/${r.id}/attachment?token=${token}" class="mini">⬇ ${esc(r.attachment_name)}</a>`
-      : '<span class="mini">—</span>';
-    const proof = r.payment_proof_name
-      ? `<a href="/api/admin/requests/${r.id}/proof?token=${token}" class="mini">🧾 ${esc(r.payment_proof_name)}</a>`
-      : '<span class="mini">—</span>';
-    const opts = Object.entries(STATUSES).map(([k, v]) =>
-      `<option value="${k}" ${r.status === k ? 'selected' : ''}>${v}</option>`).join('');
-    const msg = r.message ? `<div class="mini" style="margin-top:4px;max-width:220px">${esc(r.message)}</div>` : '';
-    return `<tr>
-      <td>${r.id}</td>
-      <td class="mini">${d}</td>
-      <td>${esc(r.ime)} ${esc(r.prezime)}${msg}</td>
-      <td class="mini">${esc(r.index_broj)}<br>${esc(r.email)}</td>
-      <td>${esc(r.subject_name)}${r.item_name ? `<div class="mini">↳ ${esc(r.item_name)}</div>` : ''}</td>
-      <td>${r.price ? r.price + ' RSD' : '—'}</td>
-      <td>${att}</td>
-      <td>${proof}</td>
-      <td><span class="tag ${r.status}">${STATUSES[r.status] || r.status}</span></td>
-      <td>
-        <select class="statusSel sm" data-id="${r.id}" style="padding:6px;font-size:12px">${opts}</select>
-        <button class="btn danger sm delReq" data-id="${r.id}" style="margin-top:6px">Obriši</button>
-      </td>
-    </tr>`;
-  }).join('');
+function moveOptions(current) {
+  return ALL_STATUSES.filter(s => s !== current).map(s =>
+    `<button class="btn ghost sm moveBtn" data-status="${s}" style="margin:2px 0;white-space:nowrap">→ ${STATUS_LABELS[s]}</button>`
+  ).join('');
+}
 
-  body.querySelectorAll('.statusSel').forEach(sel => sel.addEventListener('change', async e => {
-    await api(`/api/admin/requests/${e.target.dataset.id}`, { method: 'PATCH', body: { status: e.target.value } });
-    toast('Status ažuriran.', 'ok'); loadStats(); loadRequests();
+function renderRow(r) {
+  const d = new Date(r.created_at).toLocaleString('sr-RS');
+  const att = r.attachment_name
+    ? `<a href="/api/admin/requests/${r.id}/attachment?token=${token}" class="mini">⬇ ${esc(r.attachment_name)}</a>`
+    : '<span class="mini">—</span>';
+  const proof = r.payment_proof_name
+    ? `<a href="/api/admin/requests/${r.id}/proof?token=${token}" class="mini">🧾 ${esc(r.payment_proof_name)}</a>`
+    : '<span class="mini">—</span>';
+  const msg = r.message ? `<div class="mini" style="margin-top:4px;max-width:220px">${esc(r.message)}</div>` : '';
+  return `<tr class="${r.status === 'zavrseno' ? 'row-done' : ''}" data-rid="${r.id}">
+    <td>${r.id}</td>
+    <td class="mini">${d}</td>
+    <td>${esc(r.ime)} ${esc(r.prezime)}${msg}</td>
+    <td class="mini">${esc(r.index_broj)}<br>${esc(r.email)}</td>
+    <td>${esc(r.subject_name)}${r.item_name ? `<div class="mini">↳ ${esc(r.item_name)}</div>` : ''}</td>
+    <td>${r.price ? r.price + ' RSD' : '—'}</td>
+    <td>${att}</td>
+    <td>${proof}</td>
+    <td class="move-cell">${moveOptions(r.status)}</td>
+    <td>
+      <button class="btn sm replyReq" data-id="${r.id}" data-email="${esc(r.email)}" data-name="${esc(r.ime)} ${esc(r.prezime)}" data-subject="${esc(r.subject_name)}${r.item_name ? ' — ' + esc(r.item_name) : ''}">✉ Odgovori</button>
+      <button class="btn danger sm delReq" data-id="${r.id}" style="margin-top:4px">Obriši</button>
+    </td>
+  </tr>`;
+}
+
+function renderActiveTab() {
+  const filtered = allRequests.filter(r => r.status === activeStatus);
+  const body = $('reqBody');
+  if (!filtered.length) {
+    body.innerHTML = `<tr><td colspan="10" class="center mini">Nema zahteva u ovoj kategoriji.</td></tr>`;
+  } else {
+    body.innerHTML = filtered.map(renderRow).join('');
+  }
+  bindRowEvents();
+}
+
+function updateCounts() {
+  for (const s of ALL_STATUSES) {
+    const el = $('cnt' + s.charAt(0).toUpperCase() + s.slice(1));
+    if (el) el.textContent = allRequests.filter(r => r.status === s).length;
+  }
+}
+
+function setActiveTab(status) {
+  activeStatus = status;
+  document.querySelectorAll('.req-tab').forEach(t => t.classList.toggle('active', t.dataset.status === status));
+  renderActiveTab();
+}
+
+document.getElementById('reqTabs').addEventListener('click', e => {
+  const tab = e.target.closest('.req-tab');
+  if (tab) setActiveTab(tab.dataset.status);
+});
+
+function bindRowEvents() {
+  document.querySelectorAll('.moveBtn').forEach(btn => btn.addEventListener('click', async e => {
+    const row = e.target.closest('tr');
+    const id = row.dataset.rid;
+    const newStatus = e.target.dataset.status;
+    await api(`/api/admin/requests/${id}`, { method: 'PATCH', body: { status: newStatus } });
+    toast(`Zahtev #${id} → ${STATUS_LABELS[newStatus]}`, 'ok');
+    loadStats(); loadRequests();
   }));
-  body.querySelectorAll('.delReq').forEach(btn => btn.addEventListener('click', async e => {
+  document.querySelectorAll('.delReq').forEach(btn => btn.addEventListener('click', async e => {
     if (!confirm('Obrisati zahtev?')) return;
     await api(`/api/admin/requests/${e.target.dataset.id}`, { method: 'DELETE' });
     toast('Obrisano.', 'ok'); loadStats(); loadRequests();
   }));
+  document.querySelectorAll('.replyReq').forEach(btn => btn.addEventListener('click', e => {
+    const b = e.target;
+    openReplyModal(b.dataset.id, b.dataset.email, b.dataset.name, b.dataset.subject);
+  }));
+}
+
+async function loadRequests() {
+  allRequests = await api('/api/admin/requests');
+  updateCounts();
+  renderActiveTab();
 }
 
 async function loadSubjects() {
@@ -222,6 +270,41 @@ $('saveSettingsBtn').addEventListener('click', async () => {
 });
 
 $('refreshBtn').addEventListener('click', () => { loadStats(); loadRequests(); });
+
+// ---- Reply modal ----
+let replyRequestId = null;
+
+function openReplyModal(id, email, name, subject) {
+  replyRequestId = id;
+  $('replyTo').textContent = `Za: ${name} (${email}) — ${subject}`;
+  $('replySubject').value = `LakoFon — ${subject}`;
+  $('replyMessage').value = '';
+  $('replyFile').value = '';
+  $('replyModal').classList.add('show');
+}
+
+$('replyCancelBtn').addEventListener('click', () => $('replyModal').classList.remove('show'));
+
+$('replySendBtn').addEventListener('click', async () => {
+  const msg = $('replyMessage').value.trim();
+  if (!msg) return toast('Upiši poruku.', 'err');
+  const btn = $('replySendBtn');
+  btn.disabled = true; btn.textContent = 'Šaljem…';
+  try {
+    const fd = new FormData();
+    fd.append('subject', $('replySubject').value.trim());
+    fd.append('message', msg);
+    if ($('replyFile').files[0]) fd.append('attachment', $('replyFile').files[0]);
+    const res = await fetch(`/api/admin/requests/${replyRequestId}/reply`, {
+      method: 'POST', headers: { 'x-admin-token': token }, body: fd
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Greška');
+    $('replyModal').classList.remove('show');
+    toast('Odgovor poslat!', 'ok');
+  } catch (e) { toast(e.message, 'err'); }
+  finally { btn.disabled = false; btn.textContent = 'Pošalji odgovor'; }
+});
 
 // Auto-login ako imamo token
 if (token) showDash();

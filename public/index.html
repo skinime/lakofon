@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lakofon — podnošenje zahteva studenata FON-a</title>
+  <title>LakoFon — podnošenje zahteva studenata FON-a</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -12,7 +12,7 @@
 <body>
   <!-- NAV -->
   <div class="nav">
-    <div class="brand"><div class="logo">L</div> Lakofon</div>
+    <div class="brand"><div class="logo">L</div> LakoFon</div>
     <div class="nav-links">
       <a class="link" href="#kako">Kako radi</a>
       <a class="btn sm" href="#zahtev">Podnesi zahtev</a>
@@ -107,19 +107,51 @@
     </div>
   </section>
 
-  <!-- MODAL: uplata -->
+  <!-- MODAL: uplatnica -->
   <div class="modal-overlay" id="payModal">
-    <div class="modal">
-      <h3>Podaci za uplatu</h3>
-      <div class="muted">Izabrani predmet zahteva uplatu. Iskoristi podatke ispod, pa potvrdi slanje zahteva.</div>
-      <div class="pay-amount"><span id="mAmount"></span> <small>RSD</small></div>
-      <div class="pay-card">
-        <div class="pay-row"><span class="k">Primalac</span><span class="v" id="mRecipient"></span></div>
-        <div class="pay-row"><span class="k">Račun</span><span class="v" id="mAccount"></span></div>
-        <div class="pay-row"><span class="k">Model</span><span class="v" id="mModel"></span></div>
-        <div class="pay-row"><span class="k">Poziv na broj</span><span class="v" id="mReference"></span></div>
-        <div class="pay-row"><span class="k">Svrha</span><span class="v" id="mPurpose"></span></div>
+    <div class="modal uplatnica-modal">
+      <h3>Nalog za uplatu</h3>
+      <div class="muted">Popunjeni podaci na osnovu tvog zahteva. Iskoristi ih za uplatu, pa potvrdi slanje.</div>
+
+      <div class="uplatnica">
+        <div class="uplatnica-header">
+          <span class="uplatnica-title">NALOG ZA UPLATU</span>
+          <span class="uplatnica-amount" id="mAmount"></span>
+        </div>
+        <div class="uplatnica-body">
+          <div class="uplatnica-section">
+            <div class="uplatnica-label">PLATILAC</div>
+            <div class="uplatnica-value" id="mPayer"></div>
+          </div>
+          <div class="uplatnica-section">
+            <div class="uplatnica-label">SVRHA UPLATE</div>
+            <div class="uplatnica-value" id="mPurpose"></div>
+          </div>
+          <div class="uplatnica-section">
+            <div class="uplatnica-label">PRIMALAC</div>
+            <div class="uplatnica-value" id="mRecipient"></div>
+          </div>
+          <div class="uplatnica-row2">
+            <div class="uplatnica-section" style="flex:1">
+              <div class="uplatnica-label">ŠIFRA PLAĆANJA</div>
+              <div class="uplatnica-value">189</div>
+            </div>
+            <div class="uplatnica-section" style="flex:1">
+              <div class="uplatnica-label">VALUTA</div>
+              <div class="uplatnica-value">RSD</div>
+            </div>
+            <div class="uplatnica-section" style="flex:2">
+              <div class="uplatnica-label">IZNOS</div>
+              <div class="uplatnica-value" id="mAmountField"></div>
+            </div>
+          </div>
+          <div class="uplatnica-section">
+            <div class="uplatnica-label">RAČUN PRIMAOCA</div>
+            <div class="uplatnica-value uplatnica-mono" id="mAccount"></div>
+          </div>
+        </div>
       </div>
+
       <label style="margin-top:18px">Dokaz o uplati <span class="mini">(slika ili PDF — opciono)</span></label>
       <input type="file" id="paymentProof" accept="image/*,application/pdf" />
       <div class="modal-actions">
@@ -133,9 +165,9 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="brand"><div class="logo">L</div> Lakofon</div>
+    <div class="brand"><div class="logo">L</div> LakoFon</div>
     <div>Platforma za podnošenje zahteva studenata FON-a.</div>
-    <div style="margin-top:8px" class="mini">© 2026 Lakofon</div>
+    <div style="margin-top:8px" class="mini">© 2026 LakoFon</div>
   </footer>
 
   <script src="app.js"></script>

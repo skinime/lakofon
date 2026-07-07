@@ -104,7 +104,7 @@ $('subject').addEventListener('change', (e) => {
     for (const it of items) {
       const o = document.createElement('option');
       o.value = it.id;
-      o.textContent = it.price > 0 ? `${it.name} — ${it.price} RSD` : it.name;
+      o.textContent = it.name;
       itemSel.appendChild(o);
     }
     $('itemWrap').style.display = 'block';
@@ -124,20 +124,20 @@ function toast(msg, type = '') {
   setTimeout(() => t.className = 'toast', 3500);
 }
 
-// Payment modal
-let payment = null;
-async function loadPayment() {
-  const res = await fetch('/api/payment-info');
-  payment = await res.json();
-}
-
+// Payment modal (uplatnica)
 function showPayModal(price) {
-  $('mAmount').textContent = price;
-  $('mRecipient').textContent = payment.recipient || '—';
-  $('mAccount').textContent = payment.account || '—';
-  $('mModel').textContent = payment.model || '—';
-  $('mReference').textContent = payment.reference || $('index').value || '—';
-  $('mPurpose').textContent = payment.purpose || '—';
+  const ime = $('ime').value.trim();
+  const prezime = $('prezime').value.trim();
+  const idx = $('index').value.trim();
+  const { sub, item } = currentSelection();
+  const subjectLabel = item ? `${sub.name} — ${item.name}` : (sub ? sub.name : '');
+
+  $('mAmount').textContent = `${price} RSD`;
+  $('mAmountField').textContent = `${price},00`;
+  $('mPayer').textContent = `${ime} ${prezime}, ${idx}`;
+  $('mPurpose').textContent = subjectLabel;
+  $('mRecipient').textContent = 'LakoFon';
+  $('mAccount').textContent = '160-6000002214253-44';
   $('payModal').classList.add('show');
 }
 $('payCancel').addEventListener('click', () => $('payModal').classList.remove('show'));
@@ -208,4 +208,3 @@ async function submitRequest() {
 }
 
 loadSubjects();
-loadPayment();
