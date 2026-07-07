@@ -70,7 +70,8 @@ const defaults = {
   smtp_host: env.SMTP_HOST || '',
   smtp_port: env.SMTP_PORT || '587',
   smtp_user: env.SMTP_USER || '',
-  smtp_pass: env.SMTP_PASS || ''
+  smtp_pass: env.SMTP_PASS || '',
+  smtp_from: env.SMTP_FROM || ''
 };
 
 const getSetting = db.prepare('SELECT value FROM settings WHERE key = ?');
