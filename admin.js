@@ -94,9 +94,10 @@ function renderRow(r) {
     ? `<a href="/api/admin/requests/${r.id}/attachment?token=${token}" class="mini">⬇ ${esc(r.attachment_name)}</a>`
     : '<span class="mini">—</span>';
   const proof = r.payment_proof_name
-    ? `<a href="/api/admin/requests/${r.id}/proof?token=${token}" class="mini">🧾 ${esc(r.payment_proof_name)}</a>`
+    ? `<a href="/api/admin/requests/${r.id}/proof?token=${token}" target="_blank" class="mini">🧾 Pogledaj</a>`
     : '<span class="mini">—</span>';
-  const msg = r.message ? `<div class="mini" style="margin-top:4px;max-width:220px">${esc(r.message)}</div>` : '';
+  const msgText = r.message && r.message.length > 50 ? r.message.slice(0, 50) + '…' : r.message;
+  const msg = r.message ? `<div class="mini" style="margin-top:4px;max-width:220px" title="${esc(r.message)}">${esc(msgText)}</div>` : '';
   return `<tr class="${r.status === 'zavrseno' ? 'row-done' : ''}" data-rid="${r.id}">
     <td>${r.id}</td>
     <td class="mini">${d}</td>

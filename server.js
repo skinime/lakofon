@@ -205,7 +205,7 @@ app.get('/api/admin/requests/:id/attachment', requireAdmin, (req, res) => {
 app.get('/api/admin/requests/:id/proof', requireAdmin, (req, res) => {
   const row = db.prepare('SELECT payment_proof_path, payment_proof_name FROM requests WHERE id = ?').get(Number(req.params.id));
   if (!row?.payment_proof_path || !fs.existsSync(row.payment_proof_path)) return res.status(404).send('Nema dokaza');
-  res.download(row.payment_proof_path, row.payment_proof_name);
+  res.sendFile(path.resolve(row.payment_proof_path));
 });
 
 // Predmeti - CRUD
