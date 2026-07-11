@@ -55,6 +55,7 @@ const cols = db.prepare('PRAGMA table_info(requests)').all().map(c => c.name);
 if (!cols.includes('payment_proof_path')) db.exec('ALTER TABLE requests ADD COLUMN payment_proof_path TEXT');
 if (!cols.includes('payment_proof_name')) db.exec('ALTER TABLE requests ADD COLUMN payment_proof_name TEXT');
 if (!cols.includes('item_name')) db.exec('ALTER TABLE requests ADD COLUMN item_name TEXT');
+if (!cols.includes('telefon')) db.exec('ALTER TABLE requests ADD COLUMN telefon TEXT');
 
 // Podrazumevana podešavanja
 const env = process.env;

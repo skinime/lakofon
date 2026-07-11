@@ -91,35 +91,42 @@ function moveOptions(current) {
 function renderRow(r) {
   const d = new Date(r.created_at).toLocaleString('sr-RS');
   const att = r.attachment_name
-    ? `<a href="/api/admin/requests/${r.id}/attachment?token=${token}" class="mini">⬇ ${esc(r.attachment_name)}</a>`
-    : '<span class="mini">—</span>';
+    ? `<a href="/api/admin/requests/${r.id}/attachment?token=${token}" class="btn ghost sm">⬇ Prilog</a>`
+    : '';
   const proof = r.payment_proof_name
-    ? `<a href="/api/admin/requests/${r.id}/proof?token=${token}" target="_blank" class="mini">🧾 Pogledaj</a>`
-    : '<span class="mini">—</span>';
-  const msgText = r.message && r.message.length > 50 ? r.message.slice(0, 50) + '…' : r.message;
-  const msg = r.message ? `<div class="mini" style="margin-top:4px;max-width:220px" title="${esc(r.message)}">${esc(msgText)}</div>` : '';
-  return `<tr class="${r.status === 'zavrseno' ? 'row-done' : ''}" data-rid="${r.id}">
-    <td>${r.id}</td>
-    <td class="mini">${d}</td>
-    <td>${esc(r.ime)} ${esc(r.prezime)}${msg}</td>
-    <td class="mini">${esc(r.index_broj)}<br>${esc(r.email)}${r.telefon ? `<br>${esc(r.telefon)}` : ''}</td>
-    <td>${esc(r.subject_name)}${r.item_name ? `<div class="mini">↳ ${esc(r.item_name)}</div>` : ''}</td>
-    <td>${r.price ? r.price + ' RSD' : '—'}</td>
-    <td>${att}</td>
-    <td>${proof}</td>
-    <td class="move-cell">${moveOptions(r.status)}</td>
-    <td>
-      <button class="btn sm replyReq" data-id="${r.id}" data-email="${esc(r.email)}" data-name="${esc(r.ime)} ${esc(r.prezime)}" data-subject="${esc(r.subject_name)}${r.item_name ? ' — ' + esc(r.item_name) : ''}">✉ Odgovori</button>
-      <button class="btn danger sm delReq" data-id="${r.id}" style="margin-top:4px">Obriši</button>
-    </td>
-  </tr>`;
+    ? `<a href="/api/admin/requests/${r.id}/proof?token=${token}" target="_blank" class="btn ghost sm">🧾 Dokaz uplate</a>`
+    : '';
+  const msgText = r.message && r.message.length > 80 ? r.message.slice(0, 80) + '…' : r.message;
+  const msg = r.message ? `<div class="rc-msg" title="${esc(r.message)}">${esc(msgText)}</div>` : '';
+  return `<div class="req-card ${r.status === 'zavrseno' ? 'req-card-done' : ''}" data-rid="${r.id}">
+    <div class="rc-header">
+      <span class="rc-id">#${r.id}</span>
+      <span class="rc-date">${d}</span>
+    </div>
+    <div class="rc-body">
+      <div class="rc-info">
+        <div class="rc-name">${esc(r.ime)} ${esc(r.prezime)}</div>
+        <div class="rc-detail">${esc(r.index_broj)} · ${esc(r.email)}${r.telefon ? ` · ${esc(r.telefon)}` : ''}</div>
+        <div class="rc-subject">${esc(r.subject_name)}${r.item_name ? ` — ${esc(r.item_name)}` : ''}${r.price ? ` · <strong>${r.price} RSD</strong>` : ''}</div>
+        ${msg}
+      </div>
+      <div class="rc-files">${att}${proof}</div>
+    </div>
+    <div class="rc-actions">
+      <div class="rc-move">${moveOptions(r.status)}</div>
+      <div class="rc-btns">
+        <button class="btn sm replyReq" data-id="${r.id}" data-email="${esc(r.email)}" data-name="${esc(r.ime)} ${esc(r.prezime)}" data-subject="${esc(r.subject_name)}${r.item_name ? ' — ' + esc(r.item_name) : ''}">✉ Odgovori</button>
+        <button class="btn danger sm delReq" data-id="${r.id}">Obriši</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderActiveTab() {
   const filtered = allRequests.filter(r => r.status === activeStatus);
   const body = $('reqBody');
   if (!filtered.length) {
-    body.innerHTML = `<tr><td colspan="10" class="center mini">Nema zahteva u ovoj kategoriji.</td></tr>`;
+    body.innerHTML = `<div class="center mini" style="padding:2rem">Nema zahteva u ovoj kategoriji.</div>`;
   } else {
     body.innerHTML = filtered.map(renderRow).join('');
   }
