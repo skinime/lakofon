@@ -263,7 +263,7 @@ $('addSubBtn').addEventListener('click', async () => {
   toast('Predmet dodat.', 'ok'); loadSubjects();
 });
 
-const SETTING_FIELDS = ['admin_login_email', 'admin_email', 'pay_recipient', 'pay_account', 'pay_model', 'pay_reference', 'pay_purpose', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from'];
+const SETTING_FIELDS = ['admin_login_email', 'admin_email', 'pay_recipient', 'pay_account', 'pay_model', 'pay_reference', 'pay_purpose', 'smtp_pass', 'smtp_from'];
 async function loadSettings() {
   const s = await api('/api/admin/settings');
   SETTING_FIELDS.forEach(f => { if ($(f)) $(f).value = s[f] || ''; });
