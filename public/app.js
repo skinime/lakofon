@@ -182,6 +182,7 @@ async function submitRequest() {
     fd.append('prezime', $('prezime').value.trim());
     fd.append('index_broj', $('index').value.trim());
     fd.append('email', $('email').value.trim());
+    fd.append('telefon', $('telefon').value.trim());
     fd.append('subject_id', $('subject').value);
     fd.append('subject_other', $('subjectOther').value.trim());
     fd.append('item_id', $('subjectItem').value || '');

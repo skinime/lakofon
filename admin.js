@@ -102,7 +102,7 @@ function renderRow(r) {
     <td>${r.id}</td>
     <td class="mini">${d}</td>
     <td>${esc(r.ime)} ${esc(r.prezime)}${msg}</td>
-    <td class="mini">${esc(r.index_broj)}<br>${esc(r.email)}</td>
+    <td class="mini">${esc(r.index_broj)}<br>${esc(r.email)}${r.telefon ? `<br>${esc(r.telefon)}` : ''}</td>
     <td>${esc(r.subject_name)}${r.item_name ? `<div class="mini">↳ ${esc(r.item_name)}</div>` : ''}</td>
     <td>${r.price ? r.price + ' RSD' : '—'}</td>
     <td>${att}</td>

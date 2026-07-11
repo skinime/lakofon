@@ -31,6 +31,7 @@ db.exec(`
     prezime TEXT NOT NULL,
     index_broj TEXT NOT NULL,
     email TEXT NOT NULL,
+    telefon TEXT,
     subject_id INTEGER,
     subject_name TEXT NOT NULL,
     item_name TEXT,
