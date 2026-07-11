@@ -106,7 +106,7 @@ function renderRow(r) {
     <div class="rc-body">
       <div class="rc-info">
         <div class="rc-name">${esc(r.ime)} ${esc(r.prezime)}</div>
-        <div class="rc-detail">${esc(r.index_broj)} · ${esc(r.email)}${r.telefon ? ` · ${esc(r.telefon)}` : ''}</div>
+        <div class="rc-detail">${esc(r.index_broj)} · ${esc(r.email)}${r.telefon ? ` · <a href="https://wa.me/${r.telefon.replace(/[^0-9]/g,'').replace(/^0/,'381')}" target="_blank" title="WhatsApp">📱 ${esc(r.telefon)}</a>` : ''}</div>
         <div class="rc-subject">${esc(r.subject_name)}${r.item_name ? ` — ${esc(r.item_name)}` : ''}${r.price ? ` · <strong>${r.price} RSD</strong>` : ''}</div>
         ${msg}
       </div>
@@ -153,8 +153,8 @@ document.getElementById('reqTabs').addEventListener('click', e => {
 
 function bindRowEvents() {
   document.querySelectorAll('.moveBtn').forEach(btn => btn.addEventListener('click', async e => {
-    const row = e.target.closest('tr');
-    const id = row.dataset.rid;
+    const card = e.target.closest('.req-card');
+    const id = card.dataset.rid;
     const newStatus = e.target.dataset.status;
     await api(`/api/admin/requests/${id}`, { method: 'PATCH', body: { status: newStatus } });
     toast(`Zahtev #${id} → ${STATUS_LABELS[newStatus]}`, 'ok');
@@ -286,7 +286,7 @@ function openReplyModal(id, email, name, subject) {
   replyRequestId = id;
   $('replyTo').textContent = `Za: ${name} (${email}) — ${subject}`;
   $('replySubject').value = `LakoFon — ${subject}`;
-  $('replyMessage').value = '';
+  $('replyMessage').value = `Poštovani/a ${name.split(' ')[0]},\n\nU prilogu Vam šaljemo gotov rad koji ste poručili (${subject}).\n\nUkoliko imate dodatnih pitanja, slobodno nas kontaktirajte.\n\nSrdačan pozdrav,\nLakoFon tim`;
   $('replyFile').value = '';
   $('replyModal').classList.add('show');
 }
