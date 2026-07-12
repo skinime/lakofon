@@ -79,6 +79,9 @@ const ALL_STATUSES = ['novo', 'primljeno', 'uradu', 'zavrseno'];
 const STATUS_LABELS = { novo: 'Novi', primljeno: 'Primljeni', uradu: 'U radu', zavrseno: 'Završeni' };
 let activeStatus = 'novo';
 let allRequests = [];
+let sortBy = 'date';
+let sortDir = 'desc';
+const PRIORITY_LABELS = { 0: '—', 1: '🟢 Niska', 2: '🟡 Srednja', 3: '🔴 Visoka' };
 
 function esc(s) { return (s ?? '').toString().replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
@@ -88,8 +91,48 @@ function moveOptions(current) {
   ).join('');
 }
 
+function formatRok(rok) {
+  if (!rok) return '';
+  const d = new Date(rok + 'T00:00:00');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.ceil((d - today) / 86400000);
+  let cls = '';
+  if (diff < 0) cls = 'rok-expired';
+  else if (diff <= 2) cls = 'rok-urgent';
+  else if (diff <= 5) cls = 'rok-soon';
+  const label = diff < 0 ? `istekao ${-diff}d` : diff === 0 ? 'danas' : diff === 1 ? 'sutra' : `za ${diff}d`;
+  return `<span class="rok-badge ${cls}">📅 ${d.toLocaleDateString('sr-RS')} (${label})</span>`;
+}
+
+function prioritySelect(id, current) {
+  const opts = [0,1,2,3].map(v => `<option value="${v}" ${v === (current||0) ? 'selected' : ''}>${PRIORITY_LABELS[v]}</option>`).join('');
+  return `<select class="prioritySel sm-select" data-id="${id}">${opts}</select>`;
+}
+
 function renderRow(r) {
   const d = new Date(r.created_at).toLocaleString('sr-RS');
+  const rokHtml = formatRok(r.rok);
+
+  if (r.status === 'novo') {
+    return `<div class="req-card req-card-notif" data-rid="${r.id}">
+      <div class="rc-header">
+        <span class="rc-id">#${r.id}</span>
+        ${rokHtml}
+        <span class="rc-date">${d}</span>
+      </div>
+      <div class="notif-summary">
+        <strong>${esc(r.ime)} ${esc(r.prezime)}</strong> — ${esc(r.subject_name)}${r.item_name ? ` / ${esc(r.item_name)}` : ''}${r.price ? ` · ${r.price} RSD` : ''}
+        <div class="notif-sub">${esc(r.index_broj)} · ${esc(r.email)}</div>
+      </div>
+      <div class="rc-actions">
+        <div class="rc-move">${moveOptions(r.status)}</div>
+        <div class="rc-btns">
+          <button class="btn danger sm delReq" data-id="${r.id}">Obriši</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
   const att = r.attachment_name
     ? `<a href="/api/admin/requests/${r.id}/attachment?token=${token}" class="btn ghost sm">⬇ Prilog</a>`
     : '';
@@ -101,6 +144,7 @@ function renderRow(r) {
   return `<div class="req-card ${r.status === 'zavrseno' ? 'req-card-done' : ''}" data-rid="${r.id}">
     <div class="rc-header">
       <span class="rc-id">#${r.id}</span>
+      ${rokHtml}
       <span class="rc-date">${d}</span>
     </div>
     <div class="rc-body">
@@ -115,6 +159,7 @@ function renderRow(r) {
     <div class="rc-actions">
       <div class="rc-move">${moveOptions(r.status)}</div>
       <div class="rc-btns">
+        ${prioritySelect(r.id, r.priority)}
         <button class="btn sm replyReq" data-id="${r.id}" data-email="${esc(r.email)}" data-name="${esc(r.ime)} ${esc(r.prezime)}" data-subject="${esc(r.subject_name)}${r.item_name ? ' — ' + esc(r.item_name) : ''}">✉ Odgovori</button>
         <button class="btn danger sm delReq" data-id="${r.id}">Obriši</button>
       </div>
@@ -122,15 +167,56 @@ function renderRow(r) {
   </div>`;
 }
 
+function sortRequests(list) {
+  const dir = sortDir === 'asc' ? 1 : -1;
+  return [...list].sort((a, b) => {
+    if (sortBy === 'rok') {
+      const ra = a.rok || '9999-12-31';
+      const rb = b.rok || '9999-12-31';
+      return ra < rb ? -1 * dir : ra > rb ? 1 * dir : 0;
+    }
+    if (sortBy === 'subject') {
+      const sa = (a.subject_name || '').toLowerCase();
+      const sb = (b.subject_name || '').toLowerCase();
+      return sa < sb ? -1 * dir : sa > sb ? 1 * dir : 0;
+    }
+    if (sortBy === 'priority') {
+      return ((b.priority || 0) - (a.priority || 0)) * dir;
+    }
+    return (new Date(b.created_at) - new Date(a.created_at)) * dir;
+  });
+}
+
+function renderSortBar() {
+  const arrow = sortDir === 'asc' ? '↑' : '↓';
+  const btns = [
+    { key: 'date', label: 'Datum' },
+    { key: 'rok', label: 'Rok' },
+    { key: 'subject', label: 'Predmet' },
+    { key: 'priority', label: 'Bitnost' },
+  ].map(b => `<button class="btn ghost sm sortBtn ${sortBy === b.key ? 'active' : ''}" data-sort="${b.key}">${b.label} ${sortBy === b.key ? arrow : ''}</button>`).join('');
+  return `<div class="sort-bar">${btns}</div>`;
+}
+
 function renderActiveTab() {
-  const filtered = allRequests.filter(r => r.status === activeStatus);
+  const filtered = sortRequests(allRequests.filter(r => r.status === activeStatus));
   const body = $('reqBody');
   if (!filtered.length) {
-    body.innerHTML = `<div class="center mini" style="padding:2rem">Nema zahteva u ovoj kategoriji.</div>`;
+    body.innerHTML = renderSortBar() + `<div class="center mini" style="padding:2rem">Nema zahteva u ovoj kategoriji.</div>`;
   } else {
-    body.innerHTML = filtered.map(renderRow).join('');
+    body.innerHTML = renderSortBar() + filtered.map(renderRow).join('');
   }
   bindRowEvents();
+  bindSortEvents();
+}
+
+function bindSortEvents() {
+  document.querySelectorAll('.sortBtn').forEach(btn => btn.addEventListener('click', e => {
+    const key = e.target.dataset.sort;
+    if (sortBy === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    else { sortBy = key; sortDir = key === 'date' ? 'desc' : 'asc'; }
+    renderActiveTab();
+  }));
 }
 
 function updateCounts() {
@@ -168,6 +254,14 @@ function bindRowEvents() {
   document.querySelectorAll('.replyReq').forEach(btn => btn.addEventListener('click', e => {
     const b = e.target;
     openReplyModal(b.dataset.id, b.dataset.email, b.dataset.name, b.dataset.subject);
+  }));
+  document.querySelectorAll('.prioritySel').forEach(sel => sel.addEventListener('change', async e => {
+    const id = e.target.dataset.id;
+    const priority = Number(e.target.value);
+    await api(`/api/admin/requests/${id}`, { method: 'PATCH', body: { priority } });
+    const req = allRequests.find(r => String(r.id) === String(id));
+    if (req) req.priority = priority;
+    toast(`Bitnost #${id} → ${PRIORITY_LABELS[priority]}`, 'ok');
   }));
 }
 

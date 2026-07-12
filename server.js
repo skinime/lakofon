@@ -54,7 +54,8 @@ Broj indeksa: ${reqData.index_broj}
 Studentski mejl: ${reqData.email}
 Telefon: ${reqData.telefon || '(nije unet)'}
 Predmet: ${reqData.subject_name}${reqData.item_name ? ' — ' + reqData.item_name : ''}
-${priceLine}Poruka:
+${priceLine}Rok: ${reqData.rok || '(nije naveden)'}
+Poruka:
 ${reqData.message || '(nema poruke)'}
 
 Prilog: ${reqData.attachment_name || '(nema priloga)'}
@@ -99,7 +100,7 @@ app.get('/api/payment-info', (req, res) => {
 // Podnošenje zahteva
 app.post('/api/requests', upload.fields([{ name: 'attachment', maxCount: 1 }, { name: 'payment_proof', maxCount: 1 }]), async (req, res) => {
   try {
-    const { ime, prezime, index_broj, email, telefon, subject_id, subject_other, item_id, message } = req.body;
+    const { ime, prezime, index_broj, email, telefon, subject_id, subject_other, item_id, message, rok } = req.body;
     if (!ime || !prezime || !index_broj || !email) {
       return res.status(400).json({ error: 'Nedostaju obavezna polja.' });
     }
@@ -141,16 +142,17 @@ app.post('/api/requests', upload.fields([{ name: 'attachment', maxCount: 1 }, { 
       attachment_name: attFile ? attFile.originalname : null,
       payment_proof_path: proofFile ? proofFile.path : null,
       payment_proof_name: proofFile ? proofFile.originalname : null,
-      status: 'novo'
+      status: 'novo',
+      rok: rok || null
     };
 
     const info = db.prepare(`INSERT INTO requests
-      (created_at, ime, prezime, index_broj, email, telefon, subject_id, subject_name, item_name, price, message, attachment_path, attachment_name, payment_proof_path, payment_proof_name, status)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+      (created_at, ime, prezime, index_broj, email, telefon, subject_id, subject_name, item_name, price, message, attachment_path, attachment_name, payment_proof_path, payment_proof_name, status, rok)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(
         record.created_at, record.ime, record.prezime, record.index_broj, record.email, record.telefon,
         record.subject_id, record.subject_name, record.item_name, record.price, record.message,
         record.attachment_path, record.attachment_name,
-        record.payment_proof_path, record.payment_proof_name, record.status
+        record.payment_proof_path, record.payment_proof_name, record.status, record.rok
       );
 
     const mail = await sendAdminEmail(record);
@@ -181,8 +183,9 @@ app.get('/api/admin/requests', requireAdmin, (req, res) => {
 });
 
 app.patch('/api/admin/requests/:id', requireAdmin, (req, res) => {
-  const { status } = req.body;
-  db.prepare('UPDATE requests SET status = ? WHERE id = ?').run(status, Number(req.params.id));
+  const { status, priority } = req.body;
+  if (status !== undefined) db.prepare('UPDATE requests SET status = ? WHERE id = ?').run(status, Number(req.params.id));
+  if (priority !== undefined) db.prepare('UPDATE requests SET priority = ? WHERE id = ?').run(Number(priority), Number(req.params.id));
   res.json({ ok: true });
 });
 

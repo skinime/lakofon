@@ -187,6 +187,7 @@ async function submitRequest() {
     fd.append('subject_other', $('subjectOther').value.trim());
     fd.append('item_id', $('subjectItem').value || '');
     fd.append('message', $('message').value.trim());
+    fd.append('rok', $('rok').value || '');
     if ($('attachment').files[0]) fd.append('attachment', $('attachment').files[0]);
     if ($('paymentProof').files[0]) fd.append('payment_proof', $('paymentProof').files[0]);
 

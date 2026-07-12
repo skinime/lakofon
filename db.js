@@ -41,7 +41,9 @@ db.exec(`
     attachment_name TEXT,
     payment_proof_path TEXT,
     payment_proof_name TEXT,
-    status TEXT NOT NULL DEFAULT 'novo'
+    status TEXT NOT NULL DEFAULT 'novo',
+    rok TEXT,
+    priority INTEGER NOT NULL DEFAULT 0
   );
 
   CREATE TABLE IF NOT EXISTS settings (
@@ -56,6 +58,8 @@ if (!cols.includes('payment_proof_path')) db.exec('ALTER TABLE requests ADD COLU
 if (!cols.includes('payment_proof_name')) db.exec('ALTER TABLE requests ADD COLUMN payment_proof_name TEXT');
 if (!cols.includes('item_name')) db.exec('ALTER TABLE requests ADD COLUMN item_name TEXT');
 if (!cols.includes('telefon')) db.exec('ALTER TABLE requests ADD COLUMN telefon TEXT');
+if (!cols.includes('rok')) db.exec("ALTER TABLE requests ADD COLUMN rok TEXT");
+if (!cols.includes('priority')) db.exec("ALTER TABLE requests ADD COLUMN priority INTEGER NOT NULL DEFAULT 0");
 
 // Podrazumevana podešavanja
 const env = process.env;
