@@ -11,107 +11,159 @@
 </head>
 <body>
   <!-- NAV -->
-  <div class="nav">
-    <div class="brand"><div class="logo">L</div> LakoFon</div>
-    <div class="nav-links">
-      <a class="link" href="#kako">Kako radi</a>
-      <a class="btn sm" href="#zahtev">Podnesi zahtev</a>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <div class="logo">L</div>
+        <span>LakoFon</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#kako">Kako funkcioniše</a>
+        <a class="btn sm" href="#zahtev">Podnesi zahtev</a>
+      </div>
     </div>
-  </div>
+  </nav>
 
   <!-- HERO -->
   <header class="hero">
-    <h1>Maksimum bodova, <span class="grad">lako i jednostavno</span></h1>
-    <p>Izaberi predmet, pošalji zahtev i prepusti nama ostalo. Ti se fokusiraj na ono što je bitno.</p>
-    <div class="hero-cta">
-      <a class="btn" href="#zahtev">Podnesi zahtev →</a>
+    <div class="hero-inner">
+      <div class="hero-badge">⚡ Bez registracije · odgovor za par sati</div>
+      <h1>Jednostavno. <span class="grad">Odaberi</span>, plati i prepusti <span class="grad">nama</span>.</h1>
+      <p class="hero-sub">Izaberi predmet, pošalji zahtev i dobij sve na jednom mestu. Ti se fokusiraj na ono što je bitno — o ostalom brinemo mi.</p>
+      <div class="hero-cta">
+        <a class="btn" href="#zahtev">Podnesi zahtev →</a>
+        <a class="btn outline" href="#kako">Kako funkcioniše</a>
+      </div>
+      <div class="hero-trust">
+        <span>✅ Bez naloga</span>
+        <span>✅ Jasna cena unapred</span>
+        <span>✅ Brz odgovor</span>
+      </div>
     </div>
   </header>
 
-  <!-- FEATURES -->
-  <section class="features" id="kako">
-    <div class="feature">
-      <div class="ic">✅</div>
-      <h3>Bez registracije</h3>
-      <p>Ne moraš da praviš nalog — popuniš formu i pošalješ zahtev za manje od minuta.</p>
+  <!-- STEPS -->
+  <section class="steps-section" id="kako">
+    <div class="steps-header">
+      <div class="eyebrow">KAKO RADI</div>
+      <h2>Četiri koraka — i gotovo</h2>
+      <p>Ceo proces je osmišljen da bude jednostavan i praktičan. Bez naloga, bez komplikacija.</p>
     </div>
-    <div class="feature">
-      <div class="ic">💳</div>
-      <h3>Jasna cena</h3>
-      <p>Čim izabereš predmet, vidiš cenu i dobijaš sve podatke za uplatu na jednom mestu.</p>
-    </div>
-    <div class="feature">
-      <div class="ic">📎</div>
-      <h3>Prilog uz zahtev</h3>
-      <p>Dodaj fajl uz zahtev i sve stiže direktno — brzo i bez komplikacija.</p>
-    </div>
-    <div class="feature">
-      <div class="ic">⚡</div>
-      <h3>Brz odgovor</h3>
-      <p>Odgovor dobijaš u najkraćem mogućem roku — bez dugog čekanja.</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-top">
+          <div class="step-icon">📋</div>
+          <span class="step-num">01</span>
+        </div>
+        <h3>Odaberi</h3>
+        <p>Izaberi predmet i podstavku. Cena se odmah prikazuje — bez skrivenih troškova.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-top">
+          <div class="step-icon">📤</div>
+          <span class="step-num">02</span>
+        </div>
+        <h3>Pošalji</h3>
+        <p>Popuni formu za manje od minuta — bez pravljenja naloga, samo podaci i zahtev.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-top">
+          <div class="step-icon">💳</div>
+          <span class="step-num">03</span>
+        </div>
+        <h3>Plati</h3>
+        <p>Dobijaš popunjene podatke za uplatu. Uplatiš i priložiš dokaz — lako i brzo.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-top">
+          <div class="step-icon">✅</div>
+          <span class="step-num">04</span>
+        </div>
+        <h3>Prepusti nama</h3>
+        <p>Gotov rad dobijaš na mejl u najkraćem mogućem roku. Ti se fokusiraj na učenje.</p>
+      </div>
     </div>
   </section>
 
   <!-- FORM -->
-  <section class="section" id="zahtev">
-    <div class="container">
+  <section class="form-section" id="zahtev">
+    <div class="form-container">
       <div class="section-head">
-        <h2>Podnesi zahtev</h2>
-        <p>Popuni podatke ispod. Sva polja sa <strong>*</strong> su obavezna.</p>
+        <div class="eyebrow">PODNESI ZAHTEV</div>
+        <h2>Popuni formu</h2>
+        <p>Sva polja sa <strong>*</strong> su obavezna. Mejl se popunjava automatski.</p>
       </div>
 
-      <form id="form" class="card">
+      <form id="form" class="form-card">
         <div class="row">
-          <div>
-            <label>Ime *</label>
+          <div class="field">
+            <label for="ime">Ime *</label>
             <input id="ime" required placeholder="Petar" autocomplete="given-name" />
           </div>
-          <div>
-            <label>Prezime *</label>
+          <div class="field">
+            <label for="prezime">Prezime *</label>
             <input id="prezime" required placeholder="Nikolić" autocomplete="family-name" />
           </div>
         </div>
 
-        <label>Broj indeksa * <span class="mini">(format: 2026/0123)</span></label>
-        <input id="index" required placeholder="2026/0123" />
+        <div class="field">
+          <label for="index">Broj indeksa * <span class="mini">(format: 2026/0123)</span></label>
+          <input id="index" required placeholder="2026/0123" />
+        </div>
 
-        <label>Studentski mejl * <span class="mini">(automatski se popunjava)</span></label>
-        <input id="email" required placeholder="pn20260123@student.fon.bg.ac.rs" autocomplete="email" />
+        <div class="field">
+          <label for="email">Studentski mejl * <span class="mini">(automatski se popunjava)</span></label>
+          <input id="email" required placeholder="pn20260123@student.fon.bg.ac.rs" autocomplete="email" />
+        </div>
 
-        <label>Broj telefona *</label>
-        <input id="telefon" type="tel" required placeholder="065 123 4567" autocomplete="tel" />
+        <div class="field">
+          <label for="telefon">Broj telefona *</label>
+          <input id="telefon" type="tel" required placeholder="065 123 4567" autocomplete="tel" />
+        </div>
 
-        <label>Predmet *</label>
-        <select id="subject" required>
-          <option value="" disabled selected>Izaberi predmet…</option>
-        </select>
-
-        <div id="itemWrap" style="display:none">
-          <label>Podstavka predmeta *</label>
-          <select id="subjectItem">
-            <option value="" disabled selected>Izaberi podstavku…</option>
+        <div class="field">
+          <label for="subject">Predmet *</label>
+          <select id="subject" required>
+            <option value="" disabled selected>Izaberi predmet…</option>
           </select>
         </div>
 
+        <div id="itemWrap" style="display:none">
+          <div class="field">
+            <label for="subjectItem">Podstavka predmeta *</label>
+            <select id="subjectItem">
+              <option value="" disabled selected>Izaberi podstavku…</option>
+            </select>
+          </div>
+        </div>
+
         <div id="otherWrap" style="display:none">
-          <label>Naziv predmeta (ostalo) *</label>
-          <input id="subjectOther" placeholder="Upiši naziv predmeta" />
+          <div class="field">
+            <label for="subjectOther">Naziv predmeta (ostalo) *</label>
+            <input id="subjectOther" placeholder="Upiši naziv predmeta" />
+          </div>
         </div>
 
         <div class="price-badge" id="priceBadge">
           💳 Cena za izabranu stavku: <span id="priceVal"></span>&nbsp;RSD
         </div>
 
-        <label>Rok za izradu <span class="mini">(do kada ti treba)</span></label>
-        <input id="rok" type="date" />
+        <div class="field">
+          <label for="rok">Rok za izradu <span class="mini">(do kada ti treba)</span></label>
+          <input id="rok" type="date" />
+        </div>
 
-        <label>Poruka / detalji zahteva</label>
-        <textarea id="message" placeholder="Opiši šta ti je potrebno…"></textarea>
+        <div class="field">
+          <label for="message">Poruka / detalji zahteva</label>
+          <textarea id="message" placeholder="Opiši šta ti je potrebno…"></textarea>
+        </div>
 
-        <label>Prilog <span class="mini">(opciono — do 15 MB)</span></label>
-        <input type="file" id="attachment" />
+        <div class="field">
+          <label for="attachment">Prilog <span class="mini">(opciono — do 15 MB)</span></label>
+          <input type="file" id="attachment" />
+        </div>
 
-        <button type="submit" class="btn full" id="submitBtn">Pošalji zahtev</button>
+        <button type="submit" class="btn full" id="submitBtn">Pošalji zahtev →</button>
       </form>
     </div>
   </section>
@@ -174,9 +226,14 @@
 
   <!-- FOOTER -->
   <footer class="footer">
-    <div class="brand"><div class="logo">L</div> LakoFon</div>
-    <div>Platforma za podnošenje zahteva studenata FON-a.</div>
-    <div style="margin-top:8px" class="mini">© 2026 LakoFon</div>
+    <div class="footer-inner">
+      <div class="brand">
+        <div class="logo">L</div>
+        <span>LakoFon</span>
+      </div>
+      <div class="footer-text">Platforma za podnošenje zahteva studenata FON-a.</div>
+      <div class="mini">© 2026 LakoFon</div>
+    </div>
   </footer>
 
   <script src="app.js"></script>
