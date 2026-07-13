@@ -216,6 +216,10 @@
               <option value="" disabled selected>Izaberi predmet...</option>
             </select>
           </div>
+          <div class="field" id="rokWrap">
+            <label for="rok">Rok za izradu <span class="mini">(do kada ti treba)</span></label>
+            <input id="rok" type="text" placeholder="dd.mm.yyyy" maxlength="10" inputmode="numeric" />
+          </div>
           <div class="field" id="itemWrap" style="display:none">
             <label for="subjectItem">Podstavka predmeta *</label>
             <select id="subjectItem">
@@ -243,11 +247,6 @@
             <span>Prevuci fajl ili klikni da dodaš prilog uz zahtev</span>
           </label>
           <input type="file" id="attachment" class="sr-only" />
-        </div>
-
-        <div class="field">
-          <label for="rok">Rok za izradu <span class="mini">(do kada ti treba)</span></label>
-          <input id="rok" type="date" />
         </div>
 
         <div class="price-strip" id="priceBadge">

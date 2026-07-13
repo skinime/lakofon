@@ -182,7 +182,7 @@ async function submitRequest() {
     fd.append('subject_other', $('subjectOther').value.trim());
     fd.append('item_id', $('subjectItem').value || '');
     fd.append('message', $('message').value.trim());
-    fd.append('rok', $('rok').value || '');
+    fd.append('rok', rokToISO());
     if ($('attachment').files[0]) fd.append('attachment', $('attachment').files[0]);
     if ($('paymentProof').files[0]) fd.append('payment_proof', $('paymentProof').files[0]);
 
@@ -202,6 +202,21 @@ async function submitRequest() {
   } finally {
     btn.disabled = false; btn.textContent = 'Pošalji zahtev';
   }
+}
+
+// dd.mm.yyyy auto-formatting for rok field
+$('rok').addEventListener('input', function (e) {
+  let v = this.value.replace(/[^\d]/g, '');
+  if (v.length > 8) v = v.slice(0, 8);
+  if (v.length >= 5) v = v.slice(0, 2) + '.' + v.slice(2, 4) + '.' + v.slice(4);
+  else if (v.length >= 3) v = v.slice(0, 2) + '.' + v.slice(2);
+  this.value = v;
+});
+
+function rokToISO() {
+  const v = $('rok').value;
+  const m = v.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+  return m ? `${m[3]}-${m[2]}-${m[1]}` : '';
 }
 
 loadSubjects();

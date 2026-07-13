@@ -36,6 +36,32 @@ function requireAdmin(req, res, next) {
   res.status(401).json({ error: 'Neautorizovano' });
 }
 
+// ---- Push notifikacije (ntfy.sh) ----
+const NTFY_TOPIC = process.env.NTFY_TOPIC || 'lakofon-zahtevi';
+
+async function sendNtfyNotification(r) {
+  const title = `Novi zahtev: ${r.ime} ${r.prezime}`;
+  const body = [
+    `📚 ${r.subject_name}${r.item_name ? ' — ' + r.item_name : ''}`,
+    `📇 ${r.index_broj}`,
+    `📧 ${r.email}`,
+    r.telefon ? `📞 ${r.telefon}` : '',
+    r.price ? `💰 ${r.price} RSD` : '',
+    r.rok ? `📅 Rok: ${r.rok}` : '',
+    r.message ? `💬 ${r.message.slice(0, 200)}` : '',
+  ].filter(Boolean).join('\n');
+
+  await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+    method: 'POST',
+    headers: {
+      'Title': title,
+      'Tags': 'incoming_envelope',
+      'Priority': '4',
+    },
+    body,
+  });
+}
+
 // ---- Mejl ----
 async function sendAdminEmail(reqData) {
   const apiKey = setting('smtp_pass');
@@ -156,6 +182,7 @@ app.post('/api/requests', upload.fields([{ name: 'attachment', maxCount: 1 }, { 
       );
 
     const mail = await sendAdminEmail(record);
+    sendNtfyNotification(record).catch(() => {});
     res.json({ ok: true, id: Number(info.lastInsertRowid), price, emailSent: mail.sent, emailError: mail.reason || null });
   } catch (e) {
     console.error(e);
