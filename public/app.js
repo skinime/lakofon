@@ -164,13 +164,8 @@ function validate() {
 $('form').addEventListener('submit', (e) => {
   e.preventDefault();
   if (!validate()) return;
-  const { price } = currentSelection();
-  // Ako ima cenu -> prvo prozor za uplatu
-  if (price > 0) {
-    showPayModal(price);
-  } else {
-    submitRequest();
-  }
+  // Uplatnica privremeno isključena — zahtev se šalje direktno
+  submitRequest();
 });
 
 async function submitRequest() {
