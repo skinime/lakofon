@@ -8,33 +8,107 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-nav {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .admin-nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1140px; margin: 0 auto; padding: 14px 24px;
+    }
+    .admin-nav .brand { gap: 10px; }
+    .admin-badge {
+      font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      padding: 3px 8px; border-radius: 6px;
+      background: var(--brand-soft); color: var(--brand-dark); text-transform: uppercase;
+    }
+    .admin-nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    .container { max-width: 520px; margin: 0 auto; padding: 0 24px; }
+    .container.wide { max-width: 1140px; padding: 0 24px 60px; }
+
+    .card {
+      background: var(--bg); border: 1px solid var(--line); border-radius: 16px;
+      padding: 28px; margin-top: 20px; box-shadow: 0 1px 3px rgba(15,23,42,.06);
+    }
+    .card h2 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 4px; }
+    .card .sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
+
+    .login-wrap {
+      min-height: calc(100vh - 70px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .login-card {
+      background: var(--bg); border: 1px solid var(--line); border-radius: 20px;
+      padding: 40px; max-width: 420px; width: 100%;
+      box-shadow: 0 1px 3px rgba(15,23,42,.08), 0 8px 24px rgba(15,23,42,.06);
+    }
+    .login-card h2 {
+      font-size: 24px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px;
+    }
+    .login-card .sub { color: var(--muted); font-size: 14.5px; margin-bottom: 24px; }
+
+    .link {
+      color: var(--muted); font-weight: 600; font-size: 14px;
+      text-decoration: none; transition: color .15s;
+    }
+    .link:hover { color: var(--text); }
+
+    .stats { margin-top: 28px; }
+    .stat {
+      text-align: center;
+      background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+      padding: 20px 16px;
+    }
+    .stat .n { font-size: 32px; font-weight: 800; letter-spacing: -.03em; color: var(--brand); }
+    .stat .l { color: var(--muted); font-size: 12.5px; font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: .04em; }
+
+    .tabs { margin-top: 32px; margin-bottom: 4px; }
+
+    .section-divider {
+      border: none; border-top: 1px solid var(--line); margin: 28px 0 0;
+    }
+  </style>
 </head>
 <body>
-  <div class="nav">
-    <div class="brand"><div class="logo">L</div> LakoFon <span class="mini" style="font-weight:600">admin</span></div>
-    <div class="flex">
-      <a class="link" href="index.html">← Forma</a>
-      <button class="btn ghost sm" id="logoutBtn" style="display:none">Odjava</button>
+  <!-- NAV -->
+  <nav class="admin-nav">
+    <div class="admin-nav-inner">
+      <a class="brand" href="#">
+        <div class="logo">L</div>
+        <span>LakoFon</span>
+        <span class="admin-badge">Admin</span>
+      </a>
+      <div class="admin-nav-actions">
+        <a class="link" href="/">← Sajt</a>
+        <button class="btn ghost sm" id="logoutBtn" style="display:none">Odjava</button>
+      </div>
     </div>
-  </div>
+  </nav>
 
   <!-- Login -->
-  <div class="container" id="loginView">
-    <div class="card" style="max-width:420px;margin:60px auto">
-      <h2>Prijava admina</h2>
-      <div class="sub">Unesi svoj admin mejl i lozinku.</div>
-      <label>Mejl</label>
-      <input type="email" id="loginEmail" placeholder="mejl@primer.com" autocomplete="username" />
-      <label>Lozinka</label>
-      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
-      <button class="btn full" id="loginBtn">Prijavi se</button>
+  <div id="loginView">
+    <div class="login-wrap">
+      <div class="login-card">
+        <h2>Prijava</h2>
+        <div class="sub">Unesi admin mejl i lozinku da pristupiš panelu.</div>
+        <label>Mejl</label>
+        <input type="email" id="loginEmail" placeholder="mejl@primer.com" autocomplete="username" />
+        <label>Lozinka</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+        <button class="btn full" id="loginBtn" style="margin-top:20px">Prijavi se →</button>
+      </div>
     </div>
   </div>
 
   <!-- Dashboard -->
   <div class="container wide" id="dashView" style="display:none">
     <div class="stats">
-      <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Ukupno zahteva</div></div>
+      <div class="stat"><div class="n" id="stTotal">0</div><div class="l">Ukupno</div></div>
       <div class="stat"><div class="n" id="stNovo">0</div><div class="l">Novi</div></div>
       <div class="stat"><div class="n" id="stDone">0</div><div class="l">Završeni</div></div>
       <div class="stat"><div class="n" id="stRevenue">0</div><div class="l">Prihod (RSD)</div></div>
@@ -57,7 +131,6 @@
         </div>
         <button class="btn ghost sm" id="refreshBtn">↻ Osveži</button>
       </div>
-
       <div id="reqBody" class="req-cards"></div>
     </div>
 
@@ -70,11 +143,11 @@
           <div><label>Naziv predmeta</label><input id="newSubName" placeholder="npr. Baze podataka" /></div>
           <div><label>Cena (RSD)</label><input id="newSubPrice" type="number" value="0" /></div>
         </div>
-        <button class="btn full ok" id="addSubBtn">+ Dodaj predmet</button>
+        <button class="btn full ok" id="addSubBtn" style="margin-top:16px">+ Dodaj predmet</button>
       </div>
       <div class="card">
         <h2>Postojeći predmeti</h2>
-        <div class="sub">Svaki predmet može imati podstavke (npr. Kolokvijum 1, Ispit…), svaka sa svojom cenom. Ako predmet ima podstavke, student bira podstavku, a cena se uzima iz nje.</div>
+        <div class="sub">Svaki predmet može imati podstavke sa svojom cenom. Ako predmet ima podstavke, student bira podstavku.</div>
         <div id="subjectsList"></div>
       </div>
     </div>
@@ -96,23 +169,24 @@
       </div>
 
       <div class="card">
-        <h2>Mejl obaveštenja (Resend)</h2>
-        <div class="sub">Kad je popunjeno, svaki zahtev ti stiže na mejl. API key i From mejl se podešavaju preko env varijabli na serveru.</div>
+        <h2>Mejl obaveštenja</h2>
+        <div class="sub">Svaki zahtev ti stiže na mejl. API key i From mejl se podešavaju ovde.</div>
         <label>Mejl na koji stižu zahtevi</label><input id="admin_email" />
         <label>Resend API key</label><input id="smtp_pass" type="password" placeholder="re_xxxx..." />
-        <label>From mejl <span class="mini">(adresa sa koje se šalje, npr. info@lakofon.com)</span></label>
+        <label>From mejl <span class="mini">(npr. info@lakofon.com)</span></label>
         <input id="smtp_from" placeholder="info@lakofon.com" />
       </div>
 
       <div class="card">
-        <h2>Bezbednost (nalog za prijavu)</h2>
-        <label>Admin mejl za prijavu</label>
+        <h2>Bezbednost</h2>
+        <div class="sub">Admin nalog za prijavu u panel.</div>
+        <label>Admin mejl</label>
         <input id="admin_login_email" type="email" />
-        <label>Nova admin lozinka (ostavi prazno da ne menjaš)</label>
+        <label>Nova lozinka <span class="mini">(ostavi prazno da ne menjaš)</span></label>
         <input id="admin_password" type="password" placeholder="••••••••" />
       </div>
 
-      <button class="btn full" id="saveSettingsBtn">Sačuvaj podešavanja</button>
+      <button class="btn full" id="saveSettingsBtn" style="margin-top:20px">Sačuvaj podešavanja</button>
     </div>
   </div>
 
@@ -125,7 +199,7 @@
       <input id="replySubject" placeholder="LakoFon — odgovor na zahtev" />
       <label>Poruka *</label>
       <textarea id="replyMessage" placeholder="Upiši odgovor…" style="min-height:140px"></textarea>
-      <label>Prilog <span class="mini">(opciono — npr. rešenje, dokument)</span></label>
+      <label>Prilog <span class="mini">(opciono)</span></label>
       <input type="file" id="replyFile" />
       <div class="modal-actions">
         <button class="btn ghost" id="replyCancelBtn">Otkaži</button>
